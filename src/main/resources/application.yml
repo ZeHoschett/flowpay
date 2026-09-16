@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: flowpay
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/flowpay
+    username: flowpay
+    password: flowpay
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+flowpay:
+  security:
+    api-key: changeme-local-dev
+  webhook:
+    url: http://localhost:8080/webhooks/test-receiver
+    max-tentativas: 5
+    delay-base-segundos: 1
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.flowpay: INFO

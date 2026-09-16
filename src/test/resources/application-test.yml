@@ -1,0 +1,15 @@
+server:
+  port: 8099
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+flowpay:
+  security:
+    api-key: test-api-key
+  webhook:
+    url: http://localhost:8099/webhooks/test-receiver
+    max-tentativas: 3
+    delay-base-segundos: 1
