@@ -1,11 +1,11 @@
-# FlowPay — API de Cobranças Recorrentes
+# FlowPay API de Cobranças Recorrentes
 
 API REST em Spring Boot para criar cobranças, acompanhar seu ciclo de vida e notificar
 outros sistemas (via webhook) quando o status muda.
 
 No ecossistema mais amplo, o FlowPay é a origem: o **FLOWCNAB** (COBOL) consumiria as
 cobranças pendentes daqui para gerar a remessa bancária. Essa integração não existe de
-fato nesta v1 — o FlowPay foi construído para funcionar de forma independente.
+fato nesta v1 o FlowPay foi construído para funcionar de forma independente.
 
 ## Ciclo de vida de uma cobrança
 
@@ -80,7 +80,7 @@ da cobrança (garantia atômica de banco). Um processo separado (um `@Scheduled`
 lendo eventos `PENDENTE` da tabela) seria responsável por enviar os webhooks e marcar
 os eventos como processados. Como o registro do evento é parte da mesma transação
 que já persiste a mudança de estado, a falha entre "mudar status" e "notificar"
-deixa de existir — o evento sempre existe se o status mudou.
+deixa de existir o evento sempre existe se o status mudou.
 
 A tabela `webhook_notificacao` já existente foi desenhada para deixar esse caminho
 mais curto (ela já é, em essência, um outbox sem o consumo assíncrono via `@Scheduled`
@@ -113,7 +113,7 @@ O código está organizado por **camada técnica** (`domain`, `application`,
 `infrastructure`), não por feature. Motivo: o domínio da v1 é pequeno (uma única
 entidade central, a cobrança), então dividir por feature criaria mais pastas do que
 conceitos distintos a separar. Se o projeto crescer (múltiplos agregados, mais casos
-de uso), reorganizar por feature/módulo passa a valer mais a pena — mas isso é uma
+de uso), reorganizar por feature/módulo passa a valer mais a pena mas isso é uma
 decisão consciente para revisitar quando o domínio justificar, não um ponto de partida.
 
 - `domain/`: `Cobranca`, `StatusCobranca` (a máquina de estados) e as exceções de
@@ -149,7 +149,7 @@ curl -X POST http://localhost:5433/cobrancas \
 - `src/test/java/com/flowpay/unit`: testes unitários da máquina de estados (sem
   Spring, sem banco).
 - `src/test/java/com/flowpay/integration`: testes de integração com
-  **Testcontainers** — sobem um Postgres real em container (não um banco em memória)
+  **Testcontainers** sobem um Postgres real em container (não um banco em memória)
   para validar criação, idempotência, transições inválidas, autenticação e o disparo
   efetivo do webhook.
 
@@ -161,14 +161,14 @@ Critério de "pronto" coberto pelos testes: criar cobrança; reenviar a mesma
 ## Fora da v1 (documentado, não implementado)
 
 - Multi-tenancy.
-- Autenticação/autorização robusta (OAuth2, JWT, escopos por usuário) — hoje é só
+- Autenticação/autorização robusta (OAuth2, JWT, escopos por usuário) hoje é só
   um token fixo.
-- Múltiplos métodos de pagamento ou gateways reais — `pagar` simula o webhook que um
+- Múltiplos métodos de pagamento ou gateways reais `pagar` simula o webhook que um
   gateway real enviaria.
 - Cálculo de juros/multa por atraso.
 - Outbox pattern completo (ver seção acima) e transição automática PENDENTE → VENCIDA
   por passagem de data (hoje só existe o endpoint de marcar como paga/cancelar; a
-  cobrança não vence sozinha por tempo — isso entraria junto com o Outbox, como um
+  cobrança não vence sozinha por tempo isso entraria junto com o Outbox, como um
   job agendado).
 
 
@@ -183,7 +183,7 @@ Critério de "pronto" coberto pelos testes: criar cobrança; reenviar a mesma
 - `src/test/java/com/flowpay/unit`: testes unitários da máquina de estados (sem
   Spring, sem banco). **9/9 passando.**
 - `src/test/java/com/flowpay/integration`: testes de integração com
-  **Testcontainers** — sobem um Postgres real em container (não um banco em memória)
+  **Testcontainers** sobem um Postgres real em container (não um banco em memória)
   para validar criação, idempotência, transições inválidas, autenticação e o disparo
   efetivo do webhook.
 
@@ -192,11 +192,11 @@ Critério de "pronto" coberto pelos testes: criar cobrança; reenviar a mesma
 > o daemon do Docker, retornando um erro tipo `Could not find a valid Docker environment`
 > mesmo com o Docker rodando normalmente (confirmado via `docker ps`/`docker info`). Isso
 > é uma incompatibilidade de negociação de API entre o cliente `docker-java` (usado pelo
-> Testcontainers) e versões recentes do Docker Desktop no Windows — não é um problema do
+> Testcontainers) e versões recentes do Docker Desktop no Windows não é um problema do
 > código do FlowPay. O comportamento foi validado manualmente end-to-end via Swagger UI
 > (criação, idempotência, pagamento com disparo de webhook, transições inválidas e JSON
 > malformado, todos retornando os status e formatos corretos). Se esse erro aparecer:
-> - Confirme que não há outro Postgres nativo competindo pela mesma porta (`netstat -ano | findstr :5432`).
+>  Confirme que não há outro Postgres nativo competindo pela mesma porta (`netstat -ano | findstr :5432`).
 > - Tente apontar o Testcontainers para o pipe correto criando
     >   `%USERPROFILE%\.testcontainers.properties` com `docker.host=npipe:////./pipe/docker_engine`
     >   (ou `docker_cli`, dependendo da versão do Docker Desktop).
